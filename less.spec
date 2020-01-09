@@ -1,7 +1,7 @@
 Summary: A text file browser similar to more, but better
 Name: less
 Version: 436
-Release: 4%{?dist}
+Release: 10%{?dist}
 License: GPLv3+
 Group: Applications/Text
 Source: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
@@ -13,8 +13,10 @@ Patch4: less-394-time.patch
 Patch5: less-418-fsync.patch
 Patch6: less-436-manpage.patch
 Patch7: less-436-add-old-bot-option-in-man-page.patch
+Patch8: less-436-help.patch
 URL: http://www.greenwoodsoftware.com/less/
-Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n) 
+Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires: groff
 BuildRequires: ncurses-devel
 BuildRequires: pcre-devel
 BuildRequires: autoconf automake libtool
@@ -36,10 +38,11 @@ files, and you'll use it frequently.
 %patch5 -p1 -b .fsync
 %patch6 -p1 -b .manpage
 %patch7 -p1 -b .add-old-bot-option-in-man-page
+%patch8 -p1 -b .help
 autoreconf
 
 chmod -R a+w *
-chmod 644 lessecho.c lesskey.c version.c LICENSE
+chmod 644 *.c *.h LICENSE README
 
 %build
 %configure --with-regex=pcre
@@ -48,7 +51,6 @@ make CC="gcc $RPM_OPT_FLAGS -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOU
 %install
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
-strip -R .comment $RPM_BUILD_ROOT/%{_bindir}/less
 mkdir -p $RPM_BUILD_ROOT/etc/profile.d
 install -p -c -m 755 %{SOURCE1} $RPM_BUILD_ROOT/%{_bindir}
 install -p -c -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/profile.d
@@ -66,6 +68,28 @@ ls -la $RPM_BUILD_ROOT/etc/profile.d
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Mon Sep 26 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-10
+- Rebuilt
+
+* Wed Sep 21 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-9
+- Fix wrong `man' program option (incompatibility between man and man-db packages)
+  by using `groff' program instead for parsing troff files (#718498)
+
+* Fri Aug 12 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-8
+- Fix debuginfo source files permissions
+
+* Fri Aug 12 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-7
+- Remove strip after %%makeinstall to fix debuginfo package (#729025)
+
+* Mon Jul 18 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-6
+- Fix incorrect option description in less man pages / online help
+  Resolves: #644858
+
+* Thu Jul 14 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-5
+- Add *.xz, *.lzma (both for compressed man pages as well), *.jar and *.nbm
+  read support to lesspipe.sh
+  Resolves: #718498
+
 * Mon Jan 5 2010 Nikola Pajkovsky <npajkovs@redhat.com> - 436-4
 - fix 510724 - The new "--old-bot" option is not documented in the man page for "less"
 

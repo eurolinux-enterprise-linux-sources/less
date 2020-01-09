@@ -5,28 +5,26 @@
 
 lesspipe() {
   case "$1" in
-  *.[1-9n]|*.man|*.[1-9n].bz2|*.man.bz2|*.[1-9].gz|*.[1-9]x.gz|*.[1-9].man.gz)
+  *.[1-9n]|*.[1-9]x|*.man|*.[1-9n].bz2|*.[1-9]x.bz2|*.man.bz2|*.[1-9n].[gx]z|*.[1-9]x.[gx]z|*.man.[gx]z|*.[1-9n].lzma|*.[1-9]x.lzma|*.man.lzma)
 	case "$1" in
-		*.gz)	DECOMPRESSOR="gunzip -c" ;;
-		*.bz2)	DECOMPRESSOR="bunzip2 -c" ;;
-		*)	DECOMPRESSOR="cat" ;;
+		*.gz)		DECOMPRESSOR="gzip -dc" ;;
+		*.bz2)		DECOMPRESSOR="bzip2 -dc" ;;
+		*.xz|*.lzma)	DECOMPRESSOR="xz -dc" ;;
+		*)		DECOMPRESSOR="cat" ;;
 	esac
 	if $DECOMPRESSOR -- "$1" | file - | grep -q troff; then
-		if echo "$1" | grep -q ^/; then	#absolute path
-			man -- "$1" | cat -s
-		else
-			man -- "./$1" | cat -s
-		fi
+		$DECOMPRESSOR -- "$1" | groff -Tascii -mandoc -
 	else
 		$DECOMPRESSOR -- "$1"
 	fi ;;
   *.tar) tar tvvf "$1" ;;
   *.tgz|*.tar.gz|*.tar.[zZ]) tar tzvvf "$1" ;;
+  *.tar.xz) tar Jtvvf "$1" ;;
+  *.xz|*.lzma) xz -dc -- "$1" ;;
   *.tar.bz2|*.tbz2) bzip2 -dc -- "$1" | tar tvvf - ;;
   *.[zZ]|*.gz) gzip -dc -- "$1" ;;
   *.bz2) bzip2 -dc -- "$1" ;;
-  *.lzma) lzma -c -d -- "$1" ;;
-  *.zip) zipinfo -- "$1" ;;
+  *.zip|*.jar|*.nbm) zipinfo -- "$1" ;;
   *.rpm) rpm -qpivl --changelog -- "$1" ;;
   *.cpi|*.cpio) cpio -itv < "$1" ;;
   *.gif|*.jpeg|*.jpg|*.pcd|*.png|*.tga|*.tiff|*.tif)
@@ -39,13 +37,6 @@ lesspipe() {
      echo "Install ImageMagick or GraphicsMagick to browse images"
    fi ;;
   *)
-	case "$1" in
-		*.gz)	DECOMPRESSOR="gunzip -c" ;;
-		*.bz2)	DECOMPRESSOR="bunzip2 -c" ;;
-	esac
-	if [ ! -z $DECOMPRESSOR ] ; then
-		$DECOMPRESSOR -- "$1" ;
-	fi
   esac
 }
 
