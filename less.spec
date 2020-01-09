@@ -1,7 +1,7 @@
 Summary: A text file browser similar to more, but better
 Name: less
 Version: 436
-Release: 10%{?dist}
+Release: 13%{?dist}
 License: GPLv3+
 Group: Applications/Text
 Source: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ Patch5: less-418-fsync.patch
 Patch6: less-436-manpage.patch
 Patch7: less-436-add-old-bot-option-in-man-page.patch
 Patch8: less-436-help.patch
+Patch9: less-436-nro.empty-lessopen.patch
 URL: http://www.greenwoodsoftware.com/less/
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: groff
@@ -39,6 +40,7 @@ files, and you'll use it frequently.
 %patch6 -p1 -b .manpage
 %patch7 -p1 -b .add-old-bot-option-in-man-page
 %patch8 -p1 -b .help
+%patch9 -p1 -b .nro.empty-lessopen.patch
 autoreconf
 
 chmod -R a+w *
@@ -68,6 +70,22 @@ ls -la $RPM_BUILD_ROOT/etc/profile.d
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Wed Jun 04 2014 Jozef Mlich <jmlich@redhat.com> - 436-13
+- fixing regressions found by QA
+  Resolves: #615303
+
+* Thu May 22 2014 Jozef Mlich <jmlich@redhat.com> - 436-12
+- Fixing regressions found by QA
+- displaying of man page using troff (718498) - beware: man page file
+  type is detected using file
+- tcsh printenv problem, was caused by incorrect return value for output
+  which will be not preprocessed by lesspipe (186931)
+  Resolves: #615303
+
+* Mon Mar 31 2014 Jozef Mlich <jmlich@redhat.com> - 436-11
+- Fix less fails to decompress empty files that have been gzipped
+  Resolves: #615303
+
 * Mon Sep 26 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 436-10
 - Rebuilt
 
@@ -90,7 +108,7 @@ rm -rf $RPM_BUILD_ROOT
   read support to lesspipe.sh
   Resolves: #718498
 
-* Mon Jan 5 2010 Nikola Pajkovsky <npajkovs@redhat.com> - 436-4
+* Tue Jan 5 2010 Nikola Pajkovsky <npajkovs@redhat.com> - 436-4
 - fix 510724 - The new "--old-bot" option is not documented in the man page for "less"
 
 * Wed Dec 9 2009 Nikola Pajkovsky <npajkovs@redhat.com> - 436-3
@@ -99,7 +117,7 @@ rm -rf $RPM_BUILD_ROOT
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 436-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
-* Tue Jul 10 2009 Zdenek Prikryl <zprikryl@redhat.com> - 436-1
+* Fri Jul 10 2009 Zdenek Prikryl <zprikryl@redhat.com> - 436-1
 - Foption patch is more optimal now
 - Update to 436
 
@@ -180,7 +198,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 394-4.1
 - rebuild
 
-* Thu May  5 2006 Ivana Varekova <varekova@redhat.com> - 394-4
+* Fri May  5 2006 Ivana Varekova <varekova@redhat.com> - 394-4
 - fix problem with unassigned variable DECOMPRESSOR (#190619)
 
 * Wed Feb 15 2006 Ivana Varekova <varekova@redhat.com> - 394-3
@@ -380,7 +398,7 @@ rm -rf $RPM_BUILD_ROOT
 - fix up lesspipe stuff (Bug #8750 and a couple of non-reported bugs)
   (Karsten, did I mention I'll kill you when you return from SAP? ;) )
 
-* Sun Jan 07 2000 Karsten Hopp <karsten@redhat.de>
+* Fri Jan 07 2000 Karsten Hopp <karsten@redhat.de>
 - added lesspipe.sh to show listings of package
   contents instead of binary output.
 
