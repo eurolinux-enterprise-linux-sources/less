@@ -1,7 +1,7 @@
 Summary: A text file browser similar to more, but better
 Name: less
 Version: 458
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPLv3+
 Group: Applications/Text
 Source: http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
@@ -18,6 +18,7 @@ Patch8: less-458-lessecho-usage.patch
 Patch9: less-458-less-filters-man.patch
 Patch10: less-458-lesskey-usage.patch
 Patch11: less-458-old-bot-in-help.patch
+Patch12: less-458-use-backslash.patch
 URL: http://www.greenwoodsoftware.com/less/
 Requires: groff-base
 BuildRequires: ncurses-devel
@@ -45,6 +46,7 @@ files, and you'll use it frequently.
 %patch9 -p1 -b .less-filters-man
 %patch10 -p1 -b .lesskey-usage
 %patch11 -p1 -b .oldbothelp
+%patch12 -p2 -b .use-backslash
 autoreconf
 
 chmod -R a+w *
@@ -74,6 +76,15 @@ ls -la $RPM_BUILD_ROOT/etc/profile.d
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Wed Jul 29 2015 Scientific Linux Auto Patch Process <SCIENTIFIC-LINUX-DEVEL@LISTSERV.FNAL.GOV>
+- Eliminated rpmbuild "bogus date" error due to inconsistent weekday,
+  by assuming the date is correct and changing the weekday.
+
+* Thu May 21 2015 Jozef Mlich <jmlich@redhat.com> - 458-9
+- The --use-backslash option documented in the man page
+  was missing from online help for less.
+  Resolves: #1109090
+
 * Mon Feb 03 2014 Jozef Mlich <jmlich@redhat.com> - 458-8
 - changes introduced in less-458-old-bot-in-help.patch
   wasn't compiled in. It is necessary to use mkhelp tool.
